@@ -7,6 +7,8 @@
     <meta name="description" content="Sistema de gestão de reservas Big Compra">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FF6B00">
+    <link rel="preconnect" href="https://script.google.com">
+    <link rel="dns-prefetch" href="https://script.google.com">
     <style>
         html, body {
             margin: 0;
@@ -25,13 +27,23 @@
             height: 100vh;
             color: white;
             text-align: center;
-            position: relative;
-            overflow: hidden;
-            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            z-index: 9999;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        /* Efeito de partículas avançado */
-        .particles-container {
+        .loading-container.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        /* Efeitos de fundo otimizados */
+        .particles {
             position: absolute;
             top: 0;
             left: 0;
@@ -42,167 +54,122 @@
         
         .particle {
             position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #FF6B00;
             border-radius: 50%;
-            pointer-events: none;
+            animation: particleMove 1.8s linear infinite;
+            opacity: 0;
         }
         
-        .glow-particle {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(20px);
-            opacity: 0.7;
-            pointer-events: none;
+        @keyframes particleMove {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100px) translateX(20px);
+                opacity: 0;
+            }
         }
         
-        /* Gradiente animado de fundo */
-        .gradient-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, 
-                #FF6B00 0%, 
-                #FF8C00 25%, 
-                #FF4500 50%, 
-                #FF8C00 75%, 
-                #FF6B00 100%);
-            background-size: 400% 400%;
-            animation: gradientMove 15s ease infinite;
-            opacity: 0.3;
-            z-index: -2;
-        }
-        
-        @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        /* Linhas conectadas */
-        .connections {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.4;
-        }
-        
-        .connection-line {
-            position: absolute;
-            background: rgba(255, 107, 0, 0.3);
-            transform-origin: 0 0;
-        }
-        
-        /* Logo estilizado */
+        /* Logo com efeito */
         .logo-container {
-            margin-bottom: 60px;
+            margin-bottom: 30px;
             position: relative;
         }
         
         .logo-circle {
-            width: 140px;
-            height: 140px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             box-shadow: 
-                0 0 60px rgba(255, 107, 0, 0.5),
-                inset 0 0 20px rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            animation: logoGlow 3s ease-in-out infinite alternate;
+                0 0 40px rgba(255, 107, 0, 0.6),
+                0 0 80px rgba(255, 107, 0, 0.3);
+            animation: logoPulse 1.2s ease-in-out infinite alternate;
         }
         
-        @keyframes logoGlow {
+        @keyframes logoPulse {
             0% { 
-                box-shadow: 
-                    0 0 40px rgba(255, 107, 0, 0.3),
-                    inset 0 0 20px rgba(255, 255, 255, 0.05);
                 transform: scale(1);
+                box-shadow: 
+                    0 0 30px rgba(255, 107, 0, 0.6),
+                    0 0 60px rgba(255, 107, 0, 0.3);
             }
             100% { 
+                transform: scale(1.08);
                 box-shadow: 
-                    0 0 80px rgba(255, 107, 0, 0.8),
-                    inset 0 0 30px rgba(255, 255, 255, 0.15);
-                transform: scale(1.03);
+                    0 0 50px rgba(255, 107, 0, 0.8),
+                    0 0 100px rgba(255, 107, 0, 0.4);
             }
         }
         
         .logo-text {
-            font-size: 36px;
+            font-size: 28px;
             font-weight: 900;
             color: white;
-            letter-spacing: 2px;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-            background: linear-gradient(45deg, #ffffff, #ffd9b3);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            letter-spacing: 1.5px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
         
-        /* Anel exterior brilhante */
-        .outer-ring {
+        .ring {
             position: absolute;
-            top: -20px;
-            left: -20px;
-            right: -20px;
-            bottom: -20px;
-            border: 3px solid transparent;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: 50%;
-            background: 
-                radial-gradient(circle at 30% 30%, rgba(255, 107, 0, 0.4), transparent 70%),
-                conic-gradient(from 0deg, 
-                    transparent, 
-                    rgba(255, 107, 0, 0.8), 
-                    rgba(255, 140, 0, 0.8),
-                    rgba(255, 69, 0, 0.8),
-                    transparent);
-            background-origin: border-box;
-            background-clip: border-box;
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask-composite: exclude;
-            padding: 3px;
-            animation: ringRotate 8s linear infinite;
+            border-top-color: rgba(255, 255, 255, 0.6);
+            animation: spin 1.5s linear infinite;
         }
         
-        @keyframes ringRotate {
+        @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
         
-        /* Texto principal */
+        /* Textos */
         .loading-text {
-            font-size: 42px;
+            font-size: 32px;
             font-weight: 800;
             margin-bottom: 10px;
-            background: linear-gradient(45deg, #ff9d00, #ffffff);
+            background: linear-gradient(45deg, #FF6B00, #FF8C00, #FF6B00);
+            background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            letter-spacing: 1px;
-            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: gradientText 3s ease infinite;
+        }
+        
+        @keyframes gradientText {
+            0%, 100% { background-position: 0% center; }
+            50% { background-position: 100% center; }
         }
         
         .loading-subtext {
-            font-size: 16px;
+            font-size: 14px;
             opacity: 0.8;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
             max-width: 300px;
             line-height: 1.5;
-            font-weight: 300;
         }
         
-        /* Barra de progresso minimalista */
+        /* Barra de progresso moderna */
         .progress-container {
-            width: 300px;
+            width: 280px;
             margin-bottom: 30px;
-            position: relative;
         }
         
         .progress-bar-bg {
@@ -217,16 +184,17 @@
         .progress-bar-fill {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, 
-                transparent, 
-                #ffffff, 
-                #ff9d00, 
-                #ffffff,
-                transparent);
+            background: linear-gradient(90deg, #FF6B00, #FF8C00, #FF6B00);
+            background-size: 200% 100%;
             border-radius: 10px;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            transition: width 0.3s ease-out;
-            box-shadow: 0 0 20px rgba(255, 157, 0, 0.7);
+            animation: gradientMove 2s ease infinite;
+        }
+        
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% center; }
+            50% { background-position: 100% center; }
         }
         
         .progress-bar-fill::after {
@@ -238,93 +206,96 @@
             bottom: 0;
             background: linear-gradient(90deg, 
                 transparent, 
-                rgba(255, 255, 255, 0.8), 
+                rgba(255, 255, 255, 0.3), 
                 transparent);
-            animation: progressShine 2s infinite;
+            animation: shine 1.5s ease-in-out infinite;
         }
         
-        @keyframes progressShine {
+        @keyframes shine {
             0% { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
         }
         
-        /* Efeito de partículas pulsantes ao redor da barra */
-        .progress-particles {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 20px;
-            transform: translateY(-50%);
-            pointer-events: none;
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 12px;
+            opacity: 0.7;
         }
         
-        .progress-particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #ff9d00;
+        /* Status indicators */
+        .status-dots {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        
+        .dot {
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            opacity: 0;
-            animation: particleFloat 3s infinite linear;
+            background: rgba(255, 255, 255, 0.3);
+            animation: dotPulse 1.4s ease-in-out infinite;
         }
         
-        @keyframes particleFloat {
-            0% { 
-                transform: translateY(0) scale(0); 
-                opacity: 0; 
-            }
-            10% { 
-                opacity: 1; 
-            }
-            90% { 
-                opacity: 1; 
-            }
-            100% { 
-                transform: translateY(-30px) scale(1.5); 
-                opacity: 0; 
-            }
-        }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
         
-        /* Rodapé minimalista */
-        .footer {
-            position: absolute;
-            bottom: 25px;
-            font-size: 14px;
-            opacity: 0.6;
-            letter-spacing: 1px;
-            font-weight: 300;
+        @keyframes dotPulse {
+            0%, 60%, 100% { 
+                transform: scale(1); 
+                opacity: 0.3; 
+            }
+            30% { 
+                transform: scale(1.3); 
+                opacity: 1; 
+                background: #FF8C00;
+            }
         }
         
         iframe {
             border: none;
             width: 100%;
             height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
             opacity: 0;
-            transition: opacity 0.8s ease-in-out;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         iframe.loaded {
             opacity: 1;
         }
+        
+        /* Performance warning */
+        .performance-warning {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(255, 69, 0, 0.1);
+            color: #FF4500;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            display: none;
+            z-index: 10000;
+        }
     </style>
 </head>
 <body>
+    <!-- Tela de Carregamento -->
     <div class="loading-container" id="loading">
-        <!-- Gradiente animado -->
-        <div class="gradient-bg"></div>
-        
         <!-- Partículas -->
-        <div class="particles-container" id="particlesContainer"></div>
-        
-        <!-- Conexões -->
-        <div class="connections" id="connections"></div>
+        <div class="particles" id="particles"></div>
         
         <!-- Logo -->
         <div class="logo-container">
             <div class="logo-circle">
                 <div class="logo-text">BIG</div>
-                <div class="outer-ring"></div>
+                <div class="ring"></div>
             </div>
         </div>
         
@@ -332,296 +303,352 @@
         <div class="loading-text">Big Compra</div>
         <div class="loading-subtext">Sistema de Gestão de Reservas</div>
         
-        <!-- Barra de progresso -->
+        <!-- Barra de Progresso -->
         <div class="progress-container">
             <div class="progress-bar-bg">
                 <div class="progress-bar-fill" id="progressBar"></div>
             </div>
-            <div class="progress-particles" id="progressParticles"></div>
+            <div class="progress-info">
+                <span id="progressText">Iniciando...</span>
+                <span id="progressPercent">0%</span>
+            </div>
         </div>
         
-        <!-- Rodapé -->
-        <div class="footer" id="footerText">Carregando...</div>
+        <!-- Indicadores -->
+        <div class="status-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
     </div>
     
+    <!-- Performance Warning -->
+    <div class="performance-warning" id="perfWarning">
+        <i class="fas fa-exclamation-triangle"></i> Conexão lenta detectada
+    </div>
+    
+    <!-- Iframe da Aplicação -->
     <iframe 
-        src="https://script.google.com/macros/s/AKfycbwR5wpjO4iIYQkXq2d_uXpnrBSBPFn9b4Nfe9bilFVWVuWdZSEMK1r8u1rWUF7CY1nV/exec"
+        src="about:blank"
         id="appFrame"
         allow="camera; microphone; fullscreen"
-        onload="frameLoaded()">
+        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals">
     </iframe>
 
+    <!-- Pré-carregador invisível -->
+    <iframe id="preloader" style="display: none;"></iframe>
+
     <script>
-        // Elementos DOM
-        const loadingContainer = document.getElementById('loading');
+        // ============================================
+        // CONFIGURAÇÕES PRINCIPAIS
+        // ============================================
+        const APP_URL = "https://script.google.com/macros/s/AKfycbwR5wpjO4iIYQkXq2d_uXpnrBSBPFn9b4Nfe9bilFVWVuWdZSEMK1r8u1rWUF7CY1nV/exec";
+        const LOAD_TIMEOUT = 5000; // 5 segundos máximo
+        const QUICK_LOAD_TIMEOUT = 2500; // 2.5s para conexões rápidas
+        
+        // ============================================
+        // ELEMENTOS DOM
+        // ============================================
+        const loading = document.getElementById('loading');
         const appFrame = document.getElementById('appFrame');
         const progressBar = document.getElementById('progressBar');
-        const footerText = document.getElementById('footerText');
-        const particlesContainer = document.getElementById('particlesContainer');
-        const connectionsContainer = document.getElementById('connections');
-        const progressParticles = document.getElementById('progressParticles');
+        const progressText = document.getElementById('progressText');
+        const progressPercent = document.getElementById('progressPercent');
+        const perfWarning = document.getElementById('perfWarning');
+        const particlesContainer = document.getElementById('particles');
         
-        // Configurações
-        let progress = 0;
-        let loadingCompleted = false;
+        // ============================================
+        // VARIÁVEIS DE CONTROLE
+        // ============================================
+        let loadingStartTime = Date.now();
+        let isLoaded = false;
+        let connectionType = 'unknown';
+        let progressInterval;
         
-        // Criar partículas avançadas
-        function createParticles() {
-            const particleCount = 40;
-            const glowCount = 15;
-            
-            // Partículas normais
-            for (let i = 0; i < particleCount; i++) {
-                createParticle(false);
-            }
-            
-            // Partículas de brilho
-            for (let i = 0; i < glowCount; i++) {
-                createParticle(true);
-            }
-            
-            // Criar linhas de conexão
-            createConnections();
-            
-            // Criar partículas ao redor da barra de progresso
-            createProgressParticles();
-        }
-        
-        function createParticle(isGlow) {
-            const particle = document.createElement('div');
-            particle.className = isGlow ? 'glow-particle' : 'particle';
-            
-            // Tamanho aleatório
-            const size = isGlow ? 
-                Math.random() * 100 + 50 : 
-                Math.random() * 10 + 2;
-            
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-            
-            // Posição aleatória
-            particle.style.left = `${Math.random() * 100}%`;
-            particle.style.top = `${Math.random() * 100}%`;
-            
-            // Cor baseada na posição
-            const hue = 20 + Math.random() * 30; // Tons de laranja
-            const saturation = 70 + Math.random() * 30;
-            const lightness = 40 + Math.random() * 30;
-            
-            if (isGlow) {
-                particle.style.background = `radial-gradient(circle, 
-                    hsla(${hue}, ${saturation}%, ${lightness}%, 0.8) 0%,
-                    hsla(${hue}, ${saturation}%, ${lightness}%, 0) 70%)`;
-                particle.style.opacity = Math.random() * 0.4 + 0.1;
-            } else {
-                particle.style.background = `hsla(${hue}, ${saturation}%, ${lightness}%, 0.7)`;
-                particle.style.opacity = Math.random() * 0.6 + 0.2;
-            }
-            
-            // Animação personalizada
-            const duration = Math.random() * 20 + 10;
-            const delay = Math.random() * 5;
-            
-            particle.style.animation = `
-                particleFloat ${duration}s ${delay}s infinite ease-in-out
-            `;
-            
-            particlesContainer.appendChild(particle);
-        }
-        
-        function createConnections() {
-            const lineCount = 15;
-            const points = [];
-            
-            // Criar pontos de conexão
-            for (let i = 0; i < lineCount; i++) {
-                points.push({
-                    x: Math.random() * 100,
-                    y: Math.random() * 100
-                });
-            }
-            
-            // Conectar alguns pontos
-            for (let i = 0; i < points.length; i++) {
-                for (let j = i + 1; j < points.length; j++) {
-                    // Apenas conectar pontos próximos
-                    const distance = Math.sqrt(
-                        Math.pow(points[i].x - points[j].x, 2) + 
-                        Math.pow(points[i].y - points[j].y, 2)
-                    );
-                    
-                    if (distance < 40 && Math.random() > 0.7) {
-                        const line = document.createElement('div');
-                        line.className = 'connection-line';
-                        
-                        const x1 = points[i].x;
-                        const y1 = points[i].y;
-                        const x2 = points[j].x;
-                        const y2 = points[j].y;
-                        
-                        const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-                        const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
-                        
-                        line.style.width = `${length}vw`;
-                        line.style.height = '1px';
-                        line.style.left = `${x1}vw`;
-                        line.style.top = `${y1}vh`;
-                        line.style.transform = `rotate(${angle}deg)`;
-                        
-                        // Pulsação suave
-                        const opacity = 0.1 + Math.random() * 0.2;
-                        const pulseDuration = 3 + Math.random() * 4;
-                        line.style.opacity = opacity;
-                        line.style.animation = `pulse ${pulseDuration}s infinite ease-in-out`;
-                        
-                        // Adicionar keyframes dinamicamente
-                        if (!document.querySelector('#pulseAnimation')) {
-                            const style = document.createElement('style');
-                            style.id = 'pulseAnimation';
-                            style.textContent = `
-                                @keyframes pulse {
-                                    0%, 100% { opacity: ${opacity}; }
-                                    50% { opacity: ${opacity * 2}; }
-                                }
-                            `;
-                            document.head.appendChild(style);
-                        }
-                        
-                        connectionsContainer.appendChild(line);
-                    }
+        // ============================================
+        // DETECÇÃO DE CONEXÃO
+        // ============================================
+        function detectConnection() {
+            if ('connection' in navigator) {
+                const conn = navigator.connection;
+                connectionType = conn.effectiveType;
+                
+                if (conn.saveData || connectionType.includes('2g') || connectionType.includes('slow-2g')) {
+                    perfWarning.style.display = 'block';
+                    console.log('⚠️ Conexão lenta detectada:', connectionType);
+                    return 'slow';
+                } else if (connectionType.includes('3g')) {
+                    console.log('📶 Conexão moderada:', connectionType);
+                    return 'moderate';
+                } else {
+                    console.log('🚀 Conexão rápida:', connectionType);
+                    return 'fast';
                 }
             }
+            return 'unknown';
         }
         
-        function createProgressParticles() {
-            const particleCount = 8;
+        // ============================================
+        // CRIAÇÃO DE PARTÍCULAS OTIMIZADAS
+        // ============================================
+        function createParticles() {
+            const particleCount = connectionType.includes('slow') ? 8 : 12;
             
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
-                particle.className = 'progress-particle';
+                particle.className = 'particle';
                 
-                // Posicionar ao longo da barra
-                particle.style.left = `${(i / particleCount) * 100}%`;
+                // Posição inicial na parte inferior
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = '100vh';
                 
-                // Atraso de animação
-                particle.style.animationDelay = `${i * 0.3}s`;
+                // Delay e duração aleatórios
+                particle.style.animationDelay = `${Math.random() * 2}s`;
+                particle.style.animationDuration = `${1 + Math.random() * 1.5}s`;
                 
-                progressParticles.appendChild(particle);
+                // Tamanho aleatório
+                const size = Math.random() * 4 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Opacidade aleatória
+                particle.style.opacity = Math.random() * 0.5 + 0.3;
+                
+                particlesContainer.appendChild(particle);
             }
         }
         
-        // Atualizar progresso
-        function updateProgress(percent) {
-            progress = percent;
-            progressBar.style.width = `${percent}%`;
+        // ============================================
+        // SIMULAÇÃO DE PROGRESSO INTELIGENTE
+        // ============================================
+        function simulateSmartProgress() {
+            const connectionSpeed = detectConnection();
+            let progress = 0;
+            let targetProgress = 85; // Para em 85% até o iframe carregar
             
-            // Atualizar texto baseado no progresso
-            if (percent < 30) {
-                footerText.textContent = "Inicializando...";
-            } else if (percent < 60) {
-                footerText.textContent = "Carregando recursos...";
-            } else if (percent < 90) {
-                footerText.textContent = "Quase pronto...";
-            } else {
-                footerText.textContent = "Finalizando...";
-            }
-        }
-        
-        // Simular carregamento progressivo
-        function simulateLoading() {
-            const totalTime = 4000; // 4 segundos
-            const steps = 100;
-            const stepTime = totalTime / steps;
-            let currentStep = 0;
+            // Configurações baseadas na conexão
+            const speedConfig = {
+                'slow': { interval: 80, increment: 1.5 },
+                'moderate': { interval: 60, increment: 2 },
+                'fast': { interval: 40, increment: 3 },
+                'unknown': { interval: 50, increment: 2.5 }
+            };
             
-            function nextStep() {
-                if (currentStep <= steps) {
-                    const percent = (currentStep / steps) * 100;
+            const config = speedConfig[connectionSpeed] || speedConfig.unknown;
+            
+            clearInterval(progressInterval);
+            progressInterval = setInterval(() => {
+                if (progress < targetProgress) {
+                    progress += config.increment;
+                    if (progress > targetProgress) progress = targetProgress;
                     
-                    // Acelerar no início, desacelerar no final
-                    let adjustedPercent;
-                    if (percent < 50) {
-                        adjustedPercent = easeOutQuad(percent / 50) * 50;
+                    updateProgress(progress);
+                    
+                    // Atualizar texto baseado no progresso
+                    if (progress < 30) {
+                        progressText.textContent = "Inicializando...";
+                    } else if (progress < 60) {
+                        progressText.textContent = "Conectando...";
                     } else {
-                        adjustedPercent = 50 + easeInQuad((percent - 50) / 50) * 50;
+                        progressText.textContent = "Carregando aplicação...";
                     }
-                    
-                    updateProgress(adjustedPercent);
-                    currentStep++;
-                    
-                    // Variação no tempo entre passos para parecer mais natural
-                    const variation = Math.random() * 20 - 10;
-                    setTimeout(nextStep, stepTime + variation);
-                } else {
-                    loadingCompleted = true;
-                    footerText.textContent = "Concluído!";
-                    
-                    // Mostrar aplicação após breve pausa
-                    setTimeout(showAppFrame, 500);
                 }
-            }
-            
-            // Funções de easing
-            function easeOutQuad(t) {
-                return t * (2 - t);
-            }
-            
-            function easeInQuad(t) {
-                return t * t;
-            }
-            
-            // Iniciar simulação
-            setTimeout(nextStep, 500);
+            }, config.interval);
         }
         
-        // Mostrar aplicação
-        function showAppFrame() {
-            // Efeito de fade out na tela de carregamento
-            loadingContainer.style.opacity = '0';
-            loadingContainer.style.transform = 'scale(1.1)';
-            loadingContainer.style.transition = 'all 0.8s ease';
+        // ============================================
+        // ATUALIZAR PROGRESSO
+        // ============================================
+        function updateProgress(percent) {
+            progressBar.style.width = `${percent}%`;
+            progressPercent.textContent = `${Math.round(percent)}%`;
+        }
+        
+        // ============================================
+        // PRÉ-CARREGAMENTO AGUARDADO
+        // ============================================
+        function startPreload() {
+            console.log('🚀 Iniciando pré-carregamento...');
+            
+            // Estratégia 1: Pré-conexão (já no HTML)
+            
+            // Estratégia 2: Iniciar iframe após breve delay
+            setTimeout(() => {
+                console.log('📦 Carregando aplicação principal...');
+                appFrame.src = APP_URL;
+            }, 300);
+        }
+        
+        // ============================================
+        // QUANDO O IFRAME CARREGAR
+        // ============================================
+        function onIframeLoad() {
+            if (isLoaded) return;
+            
+            isLoaded = true;
+            const loadTime = Date.now() - loadingStartTime;
+            console.log(`✅ Aplicação carregada em ${loadTime}ms`);
+            
+            // Finalizar barra de progresso
+            clearInterval(progressInterval);
+            updateProgress(100);
+            progressText.textContent = "Pronto!";
+            
+            // Transição suave
+            setTimeout(() => {
+                loading.classList.add('hidden');
+                
+                setTimeout(() => {
+                    appFrame.classList.add('loaded');
+                    loading.style.display = 'none';
+                    
+                    // Foco na aplicação
+                    try {
+                        appFrame.contentWindow.focus();
+                    } catch (e) {
+                        console.log('Foco não permitido por CORS');
+                    }
+                }, 400);
+            }, 300);
+        }
+        
+        // ============================================
+        // SISTEMA DE TIMEOUT INTELIGENTE
+        // ============================================
+        function setupTimeout() {
+            const timeout = connectionType.includes('fast') ? QUICK_LOAD_TIMEOUT : LOAD_TIMEOUT;
             
             setTimeout(() => {
-                loadingContainer.style.display = 'none';
-                appFrame.classList.add('loaded');
-            }, 800);
-        }
-        
-        // Quando o iframe carregar
-        function frameLoaded() {
-            if (!loadingCompleted) {
-                // Se o iframe carregar antes da simulação terminar, acelerar
-                if (progress < 95) {
+                if (!isLoaded) {
+                    console.warn(`⏰ Timeout após ${timeout}ms, forçando exibição`);
+                    
+                    // Forçar progresso para 95%
+                    clearInterval(progressInterval);
                     updateProgress(95);
+                    progressText.textContent = "Concluindo...";
+                    
+                    // Mostrar aplicação mesmo incompleta
+                    setTimeout(() => {
+                        loading.classList.add('hidden');
+                        appFrame.classList.add('loaded');
+                        loading.style.display = 'none';
+                    }, 500);
                 }
+            }, timeout);
+        }
+        
+        // ============================================
+        // MONITORAMENTO DE PERFORMANCE
+        // ============================================
+        function monitorPerformance() {
+            if ('performance' in window) {
+                const perf = window.performance;
+                
+                // Monitorar tempo de carregamento
+                const checkLoad = setInterval(() => {
+                    if (isLoaded) {
+                        clearInterval(checkLoad);
+                        
+                        const timing = perf.timing;
+                        const loadTime = timing.loadEventEnd - timing.navigationStart;
+                        const domReady = timing.domContentLoadedEventEnd - timing.navigationStart;
+                        
+                        console.log(`📊 Performance:
+                            - Load total: ${loadTime}ms
+                            - DOM Ready: ${domReady}ms
+                            - Conexão: ${connectionType}`);
+                    }
+                }, 100);
             }
         }
         
-        // Inicializar quando a página carregar
-        window.addEventListener('DOMContentLoaded', () => {
-            createParticles();
-            simulateLoading();
+        // ============================================
+        // INICIALIZAÇÃO PRINCIPAL
+        // ============================================
+        function init() {
+            console.log('🚀 Inicializando Big Compra...');
+            loadingStartTime = Date.now();
             
-            // Fallback de tempo máximo
-            setTimeout(() => {
-                if (!loadingCompleted) {
-                    updateProgress(100);
-                    showAppFrame();
+            // 1. Detectar conexão
+            detectConnection();
+            
+            // 2. Criar efeitos visuais
+            createParticles();
+            
+            // 3. Iniciar progresso
+            simulateSmartProgress();
+            
+            // 4. Iniciar pré-carregamento
+            startPreload();
+            
+            // 5. Configurar timeout
+            setupTimeout();
+            
+            // 6. Monitorar performance
+            monitorPerformance();
+            
+            // 7. Configurar listener do iframe
+            appFrame.addEventListener('load', onIframeLoad);
+            
+            // 8. Fallback para load event
+            appFrame.addEventListener('error', () => {
+                console.error('❌ Erro ao carregar iframe');
+                progressText.textContent = "Erro de conexão...";
+                setTimeout(onIframeLoad, 1000);
+            });
+            
+            // 9. Otimização para mobile
+            if ('standalone' in navigator || window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('📱 Modo PWA detectado');
+            }
+        }
+        
+        // ============================================
+        // SERVICE WORKER (APÓS CARREGAMENTO)
+        // ============================================
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                // Aguardar carregamento principal
+                setTimeout(() => {
+                    navigator.serviceWorker.register('./sw.js')
+                        .then(reg => {
+                            console.log('✅ Service Worker registrado');
+                            
+                            // Verificar atualizações
+                            reg.addEventListener('updatefound', () => {
+                                console.log('🔄 Nova versão do Service Worker disponível');
+                            });
+                        })
+                        .catch(err => {
+                            console.warn('⚠️ Service Worker não registrado:', err);
+                        });
+                }, 3000);
+            }
+        }
+        
+        // ============================================
+        // INICIAR TUDO
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Iniciar aplicação imediatamente
+            init();
+            
+            // Registrar Service Worker depois
+            registerServiceWorker();
+            
+            // Hotkey para desenvolvimento (Ctrl+Shift+L para recarregar)
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.shiftKey && e.key === 'L') {
+                    e.preventDefault();
+                    location.reload();
                 }
-            }, 8000);
+            });
         });
         
-        // Service Worker registration for PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then((registration) => {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch((registrationError) => {
-                        console.log('SW registration failed: ', registrationError);
-                    });
-            });
+        // Fallback caso o DOM já esteja carregado
+        if (document.readyState === 'interactive' || document.readyState === 'complete') {
+            init();
+            registerServiceWorker();
         }
     </script>
 </body>
