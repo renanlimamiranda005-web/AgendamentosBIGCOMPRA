@@ -1,14 +1,27 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Big Compra - Sistema de Reserva</title>
+
     <meta name="description" content="Sistema de gestão de reservas Big Compra">
+
     <link rel="manifest" href="manifest.json">
+
     <meta name="theme-color" content="#FF6B00">
+
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="https://i.ibb.co/27tf8sTz/image.png">
+
     <link rel="preconnect" href="https://script.google.com"> 
     <link rel="dns-prefetch" href="https://script.google.com">
+
     <style>
         html, body {
             margin: 0;
@@ -18,7 +31,7 @@
             background: #0a0a0a;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         .loading-container {
             display: flex;
             flex-direction: column;
@@ -36,13 +49,12 @@
             z-index: 9999;
             transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         .loading-container.hidden {
             opacity: 0;
             pointer-events: none;
         }
-        
-        /* Efeitos de fundo otimizados */
+
         .particles {
             position: absolute;
             top: 0;
@@ -51,7 +63,7 @@
             height: 100%;
             z-index: -1;
         }
-        
+
         .particle {
             position: absolute;
             width: 3px;
@@ -61,30 +73,25 @@
             animation: particleMove 1.8s linear infinite;
             opacity: 0;
         }
-        
+
         @keyframes particleMove {
             0% {
                 transform: translateY(100vh) translateX(0);
                 opacity: 0;
             }
-            10% {
-                opacity: 0.8;
-            }
-            90% {
-                opacity: 0.8;
-            }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
             100% {
                 transform: translateY(-100px) translateX(20px);
                 opacity: 0;
             }
         }
-        
-        /* Logo com efeito */
+
         .logo-container {
             margin-bottom: 30px;
             position: relative;
         }
-        
+
         .logo-circle {
             width: 90px;
             height: 90px;
@@ -94,27 +101,27 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            box-shadow: 
+            box-shadow:
                 0 0 40px rgba(255, 107, 0, 0.6),
                 0 0 80px rgba(255, 107, 0, 0.3);
             animation: logoPulse 1.2s ease-in-out infinite alternate;
         }
-        
+
         @keyframes logoPulse {
-            0% { 
+            0% {
                 transform: scale(1);
-                box-shadow: 
+                box-shadow:
                     0 0 30px rgba(255, 107, 0, 0.6),
                     0 0 60px rgba(255, 107, 0, 0.3);
             }
-            100% { 
+            100% {
                 transform: scale(1.08);
-                box-shadow: 
+                box-shadow:
                     0 0 50px rgba(255, 107, 0, 0.8),
                     0 0 100px rgba(255, 107, 0, 0.4);
             }
         }
-        
+
         .logo-text {
             font-size: 28px;
             font-weight: 900;
@@ -122,7 +129,7 @@
             letter-spacing: 1.5px;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
-        
+
         .ring {
             position: absolute;
             top: -10px;
@@ -134,13 +141,12 @@
             border-top-color: rgba(255, 255, 255, 0.6);
             animation: spin 1.5s linear infinite;
         }
-        
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
-        /* Textos */
+
         .loading-text {
             font-size: 32px;
             font-weight: 800;
@@ -152,12 +158,12 @@
             background-clip: text;
             animation: gradientText 3s ease infinite;
         }
-        
+
         @keyframes gradientText {
             0%, 100% { background-position: 0% center; }
             50% { background-position: 100% center; }
         }
-        
+
         .loading-subtext {
             font-size: 14px;
             opacity: 0.8;
@@ -165,13 +171,12 @@
             max-width: 300px;
             line-height: 1.5;
         }
-        
-        /* Barra de progresso moderna */
+
         .progress-container {
             width: 280px;
             margin-bottom: 30px;
         }
-        
+
         .progress-bar-bg {
             width: 100%;
             height: 4px;
@@ -180,7 +185,7 @@
             overflow: hidden;
             position: relative;
         }
-        
+
         .progress-bar-fill {
             height: 100%;
             width: 0%;
@@ -191,12 +196,12 @@
             position: relative;
             animation: gradientMove 2s ease infinite;
         }
-        
+
         @keyframes gradientMove {
             0%, 100% { background-position: 0% center; }
             50% { background-position: 100% center; }
         }
-        
+
         .progress-bar-fill::after {
             content: '';
             position: absolute;
@@ -204,18 +209,18 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.3), 
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
                 transparent);
             animation: shine 1.5s ease-in-out infinite;
         }
-        
+
         @keyframes shine {
             0% { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
         }
-        
+
         .progress-info {
             display: flex;
             justify-content: space-between;
@@ -223,14 +228,13 @@
             font-size: 12px;
             opacity: 0.7;
         }
-        
-        /* Status indicators */
+
         .status-dots {
             display: flex;
             gap: 8px;
             margin-top: 20px;
         }
-        
+
         .dot {
             width: 8px;
             height: 8px;
@@ -238,22 +242,22 @@
             background: rgba(255, 255, 255, 0.3);
             animation: dotPulse 1.4s ease-in-out infinite;
         }
-        
+
         .dot:nth-child(2) { animation-delay: 0.2s; }
         .dot:nth-child(3) { animation-delay: 0.4s; }
-        
+
         @keyframes dotPulse {
-            0%, 60%, 100% { 
-                transform: scale(1); 
-                opacity: 0.3; 
+            0%, 60%, 100% {
+                transform: scale(1);
+                opacity: 0.3;
             }
-            30% { 
-                transform: scale(1.3); 
-                opacity: 1; 
+            30% {
+                transform: scale(1.3);
+                opacity: 1;
                 background: #FF8C00;
             }
         }
-        
+
         iframe {
             border: none;
             width: 100%;
@@ -265,12 +269,11 @@
             opacity: 0;
             transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         iframe.loaded {
             opacity: 1;
         }
-        
-        /* Performance warning */
+
         .performance-warning {
             position: fixed;
             bottom: 10px;
@@ -284,26 +287,24 @@
             z-index: 10000;
         }
     </style>
+
 </head>
+
 <body>
-    <!-- Tela de Carregamento -->
+
     <div class="loading-container" id="loading">
-        <!-- Partículas -->
         <div class="particles" id="particles"></div>
-        
-        <!-- Logo -->
+
         <div class="logo-container">
             <div class="logo-circle">
                 <div class="logo-text">BIG</div>
                 <div class="ring"></div>
             </div>
         </div>
-        
-        <!-- Textos -->
+
         <div class="loading-text">Big Compra</div>
         <div class="loading-subtext">Sistema de Gestão de Reservas</div>
-        
-        <!-- Barra de Progresso -->
+
         <div class="progress-container">
             <div class="progress-bar-bg">
                 <div class="progress-bar-fill" id="progressBar"></div>
@@ -313,42 +314,38 @@
                 <span id="progressPercent">0%</span>
             </div>
         </div>
-        
-        <!-- Indicadores -->
+
         <div class="status-dots">
             <div class="dot"></div>
             <div class="dot"></div>
             <div class="dot"></div>
         </div>
     </div>
-    
-    <!-- Performance Warning -->
+
     <div class="performance-warning" id="perfWarning">
-        <i class="fas fa-exclamation-triangle"></i> Conexão lenta detectada
+        Conexão lenta detectada
     </div>
-    
-    <!-- Iframe da Aplicação -->
-    <iframe 
+
+    <iframe
         src="about:blank"
         id="appFrame"
         allow="camera; microphone; fullscreen"
         sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals">
     </iframe>
 
-    <!-- Pré-carregador invisível -->
     <iframe id="preloader" style="display: none;"></iframe>
 
     <script>
+
         // ============================================
         // CONFIGURAÇÕES PRINCIPAIS
         // ============================================
-        const APP_URL = "https://script.google.com/macros/s/AKfycbzlbKmzoI8qo7HlkLXd8khlUt2TQq1MH9V0GuLVJhuvPl4k16Cc1G1Q-HGxbnZaFeXq/exec";
-        const LOAD_TIMEOUT = 5000; // 5 segundos máximo
-        const QUICK_LOAD_TIMEOUT = 2500; // 2.5s para conexões rápidas
-        
-        // ============================================
-        // ELEMENTOS DOM
-        // ============================================
+
+        const APP_URL = "https://script.google.com/macros/s/AKfycbyEEQ_W7oX-2aFqAXdk6Pqzch2aUQ_qbxaNKPgTShUhzl2bSMg3HgPEemBEN5wvFMXa/exec";
+
+        const LOAD_TIMEOUT = 5000;
+        const QUICK_LOAD_TIMEOUT = 2500;
+
         const loading = document.getElementById('loading');
         const appFrame = document.getElementById('appFrame');
         const progressBar = document.getElementById('progressBar');
@@ -356,95 +353,76 @@
         const progressPercent = document.getElementById('progressPercent');
         const perfWarning = document.getElementById('perfWarning');
         const particlesContainer = document.getElementById('particles');
-        
-        // ============================================
-        // VARIÁVEIS DE CONTROLE
-        // ============================================
+
         let loadingStartTime = Date.now();
         let isLoaded = false;
         let connectionType = 'unknown';
         let progressInterval;
-        
-        // ============================================
-        // DETECÇÃO DE CONEXÃO
-        // ============================================
+
         function detectConnection() {
             if ('connection' in navigator) {
                 const conn = navigator.connection;
                 connectionType = conn.effectiveType;
-                
+
                 if (conn.saveData || connectionType.includes('2g') || connectionType.includes('slow-2g')) {
                     perfWarning.style.display = 'block';
-                    console.log('⚠️ Conexão lenta detectada:', connectionType);
                     return 'slow';
                 } else if (connectionType.includes('3g')) {
-                    console.log('📶 Conexão moderada:', connectionType);
                     return 'moderate';
                 } else {
-                    console.log('🚀 Conexão rápida:', connectionType);
                     return 'fast';
                 }
             }
             return 'unknown';
         }
-        
-        // ============================================
-        // CRIAÇÃO DE PARTÍCULAS OTIMIZADAS
-        // ============================================
+
         function createParticles() {
             const particleCount = connectionType.includes('slow') ? 8 : 12;
-            
+
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
-                
-                // Posição inicial na parte inferior
+
                 particle.style.left = `${Math.random() * 100}%`;
                 particle.style.top = '100vh';
-                
-                // Delay e duração aleatórios
                 particle.style.animationDelay = `${Math.random() * 2}s`;
                 particle.style.animationDuration = `${1 + Math.random() * 1.5}s`;
-                
-                // Tamanho aleatório
+
                 const size = Math.random() * 4 + 2;
                 particle.style.width = `${size}px`;
                 particle.style.height = `${size}px`;
-                
-                // Opacidade aleatória
                 particle.style.opacity = Math.random() * 0.5 + 0.3;
-                
+
                 particlesContainer.appendChild(particle);
             }
         }
-        
-        // ============================================
-        // SIMULAÇÃO DE PROGRESSO INTELIGENTE
-        // ============================================
+
         function simulateSmartProgress() {
+
             const connectionSpeed = detectConnection();
             let progress = 0;
-            let targetProgress = 85; // Para em 85% até o iframe carregar
-            
-            // Configurações baseadas na conexão
+            let targetProgress = 85;
+
             const speedConfig = {
                 'slow': { interval: 80, increment: 1.5 },
                 'moderate': { interval: 60, increment: 2 },
                 'fast': { interval: 40, increment: 3 },
                 'unknown': { interval: 50, increment: 2.5 }
             };
-            
+
             const config = speedConfig[connectionSpeed] || speedConfig.unknown;
-            
+
             clearInterval(progressInterval);
+
             progressInterval = setInterval(() => {
+
                 if (progress < targetProgress) {
+
                     progress += config.increment;
                     if (progress > targetProgress) progress = targetProgress;
-                    
+
                     updateProgress(progress);
-                    
-                    // Atualizar texto baseado no progresso
+
                     if (progress < 30) {
                         progressText.textContent = "Inicializando...";
                     } else if (progress < 60) {
@@ -453,203 +431,123 @@
                         progressText.textContent = "Carregando aplicação...";
                     }
                 }
+
             }, config.interval);
         }
-        
-        // ============================================
-        // ATUALIZAR PROGRESSO
-        // ============================================
+
         function updateProgress(percent) {
             progressBar.style.width = `${percent}%`;
             progressPercent.textContent = `${Math.round(percent)}%`;
         }
-        
-        // ============================================
-        // PRÉ-CARREGAMENTO AGUARDADO
-        // ============================================
+
         function startPreload() {
-            console.log('🚀 Iniciando pré-carregamento...');
-            
-            // Estratégia 1: Pré-conexão (já no HTML)
-            
-            // Estratégia 2: Iniciar iframe após breve delay
             setTimeout(() => {
-                console.log('📦 Carregando aplicação principal...');
                 appFrame.src = APP_URL;
             }, 300);
         }
-        
-        // ============================================
-        // QUANDO O IFRAME CARREGAR
-        // ============================================
+
         function onIframeLoad() {
+
             if (isLoaded) return;
-            
+
             isLoaded = true;
-            const loadTime = Date.now() - loadingStartTime;
-            console.log(`✅ Aplicação carregada em ${loadTime}ms`);
-            
-            // Finalizar barra de progresso
+
             clearInterval(progressInterval);
             updateProgress(100);
             progressText.textContent = "Pronto!";
-            
-            // Transição suave
+
             setTimeout(() => {
+
                 loading.classList.add('hidden');
-                
+
                 setTimeout(() => {
                     appFrame.classList.add('loaded');
                     loading.style.display = 'none';
-                    
-                    // Foco na aplicação
-                    try {
-                        appFrame.contentWindow.focus();
-                    } catch (e) {
-                        console.log('Foco não permitido por CORS');
-                    }
                 }, 400);
+
             }, 300);
         }
-        
-        // ============================================
-        // SISTEMA DE TIMEOUT INTELIGENTE
-        // ============================================
+
         function setupTimeout() {
+
             const timeout = connectionType.includes('fast') ? QUICK_LOAD_TIMEOUT : LOAD_TIMEOUT;
-            
+
             setTimeout(() => {
+
                 if (!isLoaded) {
-                    console.warn(`⏰ Timeout após ${timeout}ms, forçando exibição`);
-                    
-                    // Forçar progresso para 95%
+
                     clearInterval(progressInterval);
                     updateProgress(95);
                     progressText.textContent = "Concluindo...";
-                    
-                    // Mostrar aplicação mesmo incompleta
+
                     setTimeout(() => {
                         loading.classList.add('hidden');
                         appFrame.classList.add('loaded');
                         loading.style.display = 'none';
                     }, 500);
+
                 }
+
             }, timeout);
         }
-        
-        // ============================================
-        // MONITORAMENTO DE PERFORMANCE
-        // ============================================
+
         function monitorPerformance() {
             if ('performance' in window) {
-                const perf = window.performance;
-                
-                // Monitorar tempo de carregamento
+
                 const checkLoad = setInterval(() => {
+
                     if (isLoaded) {
                         clearInterval(checkLoad);
-                        
-                        const timing = perf.timing;
-                        const loadTime = timing.loadEventEnd - timing.navigationStart;
-                        const domReady = timing.domContentLoadedEventEnd - timing.navigationStart;
-                        
-                        console.log(`📊 Performance:
-                            - Load total: ${loadTime}ms
-                            - DOM Ready: ${domReady}ms
-                            - Conexão: ${connectionType}`);
                     }
+
                 }, 100);
             }
         }
-        
-        // ============================================
-        // INICIALIZAÇÃO PRINCIPAL
-        // ============================================
+
         function init() {
-            console.log('🚀 Inicializando Big Compra...');
+
             loadingStartTime = Date.now();
-            
-            // 1. Detectar conexão
+
             detectConnection();
-            
-            // 2. Criar efeitos visuais
             createParticles();
-            
-            // 3. Iniciar progresso
             simulateSmartProgress();
-            
-            // 4. Iniciar pré-carregamento
             startPreload();
-            
-            // 5. Configurar timeout
             setupTimeout();
-            
-            // 6. Monitorar performance
             monitorPerformance();
-            
-            // 7. Configurar listener do iframe
+
             appFrame.addEventListener('load', onIframeLoad);
-            
-            // 8. Fallback para load event
+
             appFrame.addEventListener('error', () => {
-                console.error('❌ Erro ao carregar iframe');
                 progressText.textContent = "Erro de conexão...";
                 setTimeout(onIframeLoad, 1000);
             });
-            
-            // 9. Otimização para mobile
-            if ('standalone' in navigator || window.matchMedia('(display-mode: standalone)').matches) {
-                console.log('📱 Modo PWA detectado');
-            }
         }
-        
-        // ============================================
-        // SERVICE WORKER (APÓS CARREGAMENTO)
-        // ============================================
+
         function registerServiceWorker() {
+
             if ('serviceWorker' in navigator) {
-                // Aguardar carregamento principal
+
                 setTimeout(() => {
+
                     navigator.serviceWorker.register('./sw.js')
-                        .then(reg => {
-                            console.log('✅ Service Worker registrado');
-                            
-                            // Verificar atualizações
-                            reg.addEventListener('updatefound', () => {
-                                console.log('🔄 Nova versão do Service Worker disponível');
-                            });
-                        })
-                        .catch(err => {
-                            console.warn('⚠️ Service Worker não registrado:', err);
-                        });
+                        .catch(() => {});
+
                 }, 3000);
             }
         }
-        
-        // ============================================
-        // INICIAR TUDO
-        // ============================================
+
         document.addEventListener('DOMContentLoaded', () => {
-            // Iniciar aplicação imediatamente
             init();
-            
-            // Registrar Service Worker depois
             registerServiceWorker();
-            
-            // Hotkey para desenvolvimento (Ctrl+Shift+L para recarregar)
-            document.addEventListener('keydown', (e) => {
-                if (e.ctrlKey && e.shiftKey && e.key === 'L') {
-                    e.preventDefault();
-                    location.reload();
-                }
-            });
         });
-        
-        // Fallback caso o DOM já esteja carregado
+
         if (document.readyState === 'interactive' || document.readyState === 'complete') {
             init();
             registerServiceWorker();
         }
+
     </script>
+
 </body>
+
 </html>
