@@ -269,6 +269,143 @@
             display: none;
             z-index: 10000;
         }
+
+        /* ============================================
+           TELA DE MANUTENÇÃO / ERRO
+           ============================================ */
+
+        .system-screen {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 10001;
+            background:
+                radial-gradient(circle at 50% 35%, rgba(255, 107, 0, 0.10), transparent 35%),
+                linear-gradient(135deg, #0a0a0a 0%, #151515 100%);
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            box-sizing: border-box;
+            color: white;
+            text-align: center;
+            overflow: auto;
+        }
+
+        .system-screen.active {
+            display: flex;
+        }
+
+        .system-card {
+            width: 100%;
+            max-width: 520px;
+            padding: 42px 30px;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.045);
+            border: 1px solid rgba(255, 107, 0, 0.28);
+            border-radius: 24px;
+            box-shadow:
+                0 24px 70px rgba(0, 0, 0, 0.5),
+                0 0 45px rgba(255, 107, 0, 0.08);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .system-icon {
+            font-size: 68px;
+            line-height: 1;
+            margin-bottom: 22px;
+            animation: systemFloat 2.2s ease-in-out infinite;
+        }
+
+        @keyframes systemFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-9px); }
+        }
+
+        .system-brand {
+            margin: 0 0 6px;
+            font-size: 38px;
+            font-weight: 800;
+            color: #FF6B00;
+        }
+
+        .system-title {
+            margin: 0 0 20px;
+            font-size: 24px;
+            font-weight: 650;
+        }
+
+        .system-message {
+            margin: 0;
+            font-size: 16px;
+            line-height: 1.65;
+            color: #d5d5d5;
+        }
+
+        .system-time {
+            display: none;
+            margin-top: 24px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            background: rgba(255, 107, 0, 0.10);
+            border: 1px solid rgba(255, 107, 0, 0.25);
+            color: #FF9A3D;
+            font-weight: 650;
+        }
+
+        .system-footer {
+            margin: 28px 0 0;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        .retry-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 26px;
+            min-width: 180px;
+            min-height: 44px;
+            padding: 0 20px;
+            border: 0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #FF6B00, #FF8C00);
+            color: white;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 28px rgba(255, 107, 0, 0.22);
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .retry-button:hover {
+            transform: translateY(-1px);
+        }
+
+        .retry-button:active {
+            transform: translateY(0);
+            opacity: 0.9;
+        }
+
+        @media (max-width: 600px) {
+            .system-card {
+                padding: 34px 22px;
+                border-radius: 20px;
+            }
+
+            .system-icon {
+                font-size: 58px;
+            }
+
+            .system-brand {
+                font-size: 32px;
+            }
+
+            .system-title {
+                font-size: 21px;
+            }
+        }
+
     </style>
 
 </head>
@@ -302,6 +439,38 @@
         </div>
     </div>
 
+
+    <!-- TELA DE MANUTENÇÃO -->
+    <div class="system-screen" id="maintenanceScreen" aria-live="polite">
+        <div class="system-card">
+            <div class="system-icon">🛠️</div>
+            <h1 class="system-brand">Big Compra</h1>
+            <h2 class="system-title" id="maintenanceTitle">Sistema em manutenção</h2>
+            <p class="system-message" id="maintenanceMessage">
+                Estamos realizando melhorias no sistema.
+            </p>
+            <div class="system-time" id="maintenanceTime"></div>
+            <p class="system-footer">Agradecemos pela compreensão.</p>
+        </div>
+    </div>
+
+    <!-- TELA DE ERRO INESPERADO -->
+    <div class="system-screen" id="errorScreen" aria-live="polite">
+        <div class="system-card">
+            <div class="system-icon">⚠️</div>
+            <h1 class="system-brand">Big Compra</h1>
+            <h2 class="system-title">Sistema temporariamente indisponível</h2>
+            <p class="system-message">
+                Não foi possível carregar o sistema neste momento.
+                Verifique sua conexão e tente novamente.
+            </p>
+            <button class="retry-button" id="retryButton" type="button">
+                Tentar novamente
+            </button>
+            <p class="system-footer">Se o problema continuar, aguarde alguns minutos.</p>
+        </div>
+    </div>
+
     <div class="performance-warning" id="perfWarning">
         Conexão lenta detectada
     </div>
@@ -321,10 +490,15 @@
         // CONFIGURAÇÕES PRINCIPAIS
         // ============================================
 
-        const APP_URL = "https://script.google.com/macros/s/AKfycbysaG3c5nPzbzRj0NHTm9q56lpi4UMf36G3D4LViKlYW7_";
+        // IMPORTANTE:
+        // Troque pelo link COMPLETO e publicado do seu Apps Script, normalmente terminando em /exec.
+        const APP_URL = "https://script.google.com/macros/s/COLE_AQUI_SEU_LINK_COMPLETO/exec";
 
-        const LOAD_TIMEOUT = 5000;
-        const QUICK_LOAD_TIMEOUT = 2500;
+        // Arquivo que liga/desliga o modo manutenção.
+        const STATUS_URL = "./status.json";
+
+        const LOAD_TIMEOUT = 8000;
+        const QUICK_LOAD_TIMEOUT = 5000;
 
         const loading = document.getElementById('loading');
         const appFrame = document.getElementById('appFrame');
@@ -334,10 +508,21 @@
         const perfWarning = document.getElementById('perfWarning');
         const particlesContainer = document.getElementById('particles');
 
+        const maintenanceScreen = document.getElementById('maintenanceScreen');
+        const maintenanceTitle = document.getElementById('maintenanceTitle');
+        const maintenanceMessage = document.getElementById('maintenanceMessage');
+        const maintenanceTime = document.getElementById('maintenanceTime');
+
+        const errorScreen = document.getElementById('errorScreen');
+        const retryButton = document.getElementById('retryButton');
+
         let loadingStartTime = Date.now();
         let isLoaded = false;
         let connectionType = 'unknown';
         let progressInterval;
+        let loadTimeoutId;
+        let initialized = false;
+        let loadingApp = false;
 
         function detectConnection() {
             if ('connection' in navigator) {
@@ -421,19 +606,175 @@
             progressPercent.textContent = `${Math.round(percent)}%`;
         }
 
-        function startPreload() {
+        function hideAllScreens() {
+            maintenanceScreen.classList.remove('active');
+            errorScreen.classList.remove('active');
+        }
+
+        function showMaintenance(status = {}) {
+
+            clearInterval(progressInterval);
+            clearTimeout(loadTimeoutId);
+
+            isLoaded = true;
+            loadingApp = false;
+
+            appFrame.classList.remove('loaded');
+            appFrame.style.display = 'none';
+            appFrame.src = 'about:blank';
+
+            loading.classList.add('hidden');
+
+            const title = status.titulo || "Sistema em manutenção";
+            const message = status.mensagem || "Estamos realizando melhorias no sistema.";
+
+            maintenanceTitle.textContent = title;
+            maintenanceMessage.textContent = message;
+
+            if (status.previsao && String(status.previsao).trim() !== "") {
+
+                maintenanceTime.textContent =
+                    "Previsão de retorno: " + String(status.previsao).trim();
+
+                maintenanceTime.style.display = 'block';
+
+            } else {
+
+                maintenanceTime.style.display = 'none';
+                maintenanceTime.textContent = '';
+
+            }
+
+            errorScreen.classList.remove('active');
+            maintenanceScreen.classList.add('active');
+
             setTimeout(() => {
-                appFrame.src = APP_URL;
-            }, 300);
+                loading.style.display = 'none';
+            }, 400);
+        }
+
+        function showError() {
+
+            clearInterval(progressInterval);
+            clearTimeout(loadTimeoutId);
+
+            isLoaded = false;
+            loadingApp = false;
+
+            appFrame.classList.remove('loaded');
+            appFrame.style.display = 'none';
+
+            loading.classList.add('hidden');
+            maintenanceScreen.classList.remove('active');
+            errorScreen.classList.add('active');
+
+            setTimeout(() => {
+                loading.style.display = 'none';
+            }, 400);
+        }
+
+        function resetLoadingScreen() {
+
+            clearInterval(progressInterval);
+            clearTimeout(loadTimeoutId);
+
+            isLoaded = false;
+            loadingApp = false;
+
+            hideAllScreens();
+
+            appFrame.classList.remove('loaded');
+            appFrame.style.display = 'block';
+            appFrame.src = 'about:blank';
+
+            loading.style.display = 'flex';
+            loading.classList.remove('hidden');
+
+            updateProgress(0);
+            progressText.textContent = "Iniciando...";
+
+            simulateSmartProgress();
+        }
+
+        async function checkStatus() {
+
+            try {
+
+                const separator = STATUS_URL.includes('?') ? '&' : '?';
+
+                const response = await fetch(
+                    STATUS_URL + separator + 't=' + Date.now(),
+                    {
+                        cache: 'no-store',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error('Falha ao consultar status.json: HTTP ' + response.status);
+                }
+
+                return await response.json();
+
+            } catch (error) {
+
+                console.warn(
+                    'Não foi possível consultar o status de manutenção. O sistema será aberto normalmente.',
+                    error
+                );
+
+                // Se status.json falhar, não bloqueia o sistema.
+                return {
+                    manutencao: false
+                };
+            }
+        }
+
+        async function startPreload() {
+
+            const status = await checkStatus();
+
+            if (status.manutencao === true) {
+
+                showMaintenance(status);
+                return;
+            }
+
+            loadApplication();
+        }
+
+        function loadApplication() {
+
+            hideAllScreens();
+
+            isLoaded = false;
+            loadingApp = true;
+
+            appFrame.style.display = 'block';
+            appFrame.classList.remove('loaded');
+
+            progressText.textContent = "Conectando ao sistema...";
+
+            // Recarrega a URL do Apps Script.
+            appFrame.src = APP_URL;
+
+            setupTimeout();
         }
 
         function onIframeLoad() {
 
-            if (isLoaded) return;
+            // about:blank também dispara "load", então ignoramos quando
+            // ainda não começamos a carregar o Apps Script.
+            if (!loadingApp || isLoaded) return;
 
             isLoaded = true;
+            loadingApp = false;
 
+            clearTimeout(loadTimeoutId);
             clearInterval(progressInterval);
+
             updateProgress(100);
             progressText.textContent = "Pronto!";
 
@@ -442,8 +783,10 @@
                 loading.classList.add('hidden');
 
                 setTimeout(() => {
+
                     appFrame.classList.add('loaded');
                     loading.style.display = 'none';
+
                 }, 400);
 
             }, 300);
@@ -451,21 +794,23 @@
 
         function setupTimeout() {
 
-            const timeout = connectionType.includes('fast') ? QUICK_LOAD_TIMEOUT : LOAD_TIMEOUT;
+            clearTimeout(loadTimeoutId);
 
-            setTimeout(() => {
+            const timeout =
+                connectionType.includes('fast')
+                    ? QUICK_LOAD_TIMEOUT
+                    : LOAD_TIMEOUT;
 
-                if (!isLoaded) {
+            loadTimeoutId = setTimeout(() => {
 
-                    clearInterval(progressInterval);
+                if (!isLoaded && loadingApp) {
+
+                    progressText.textContent = "Ainda carregando...";
                     updateProgress(95);
-                    progressText.textContent = "Concluindo...";
 
-                    setTimeout(() => {
-                        loading.classList.add('hidden');
-                        appFrame.classList.add('loaded');
-                        loading.style.display = 'none';
-                    }, 500);
+                    // Não mostramos erro automaticamente aqui:
+                    // Apps Script pode demorar em conexões lentas.
+                    // O iframe continuará tentando carregar.
 
                 }
 
@@ -487,20 +832,26 @@
 
         function init() {
 
+            if (initialized) return;
+            initialized = true;
+
             loadingStartTime = Date.now();
 
             detectConnection();
             createParticles();
             simulateSmartProgress();
             startPreload();
-            setupTimeout();
             monitorPerformance();
 
             appFrame.addEventListener('load', onIframeLoad);
 
             appFrame.addEventListener('error', () => {
-                progressText.textContent = "Erro de conexão...";
-                setTimeout(onIframeLoad, 1000);
+                showError();
+            });
+
+            retryButton.addEventListener('click', () => {
+                resetLoadingScreen();
+                startPreload();
             });
         }
 
@@ -517,14 +868,15 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        function startPage() {
             init();
             registerServiceWorker();
-        });
+        }
 
-        if (document.readyState === 'interactive' || document.readyState === 'complete') {
-            init();
-            registerServiceWorker();
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', startPage, { once: true });
+        } else {
+            startPage();
         }
 
     </script>
