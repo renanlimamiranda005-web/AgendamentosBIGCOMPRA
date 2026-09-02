@@ -1,6 +1,6 @@
 {
-  "manutencao": true,
+  "manutencao": false,
   "titulo": "Sistema em manutenção",
   "mensagem": "Estamos realizando uma atualização no sistema.",
-  "previsao": "Retorno previsto para 02/09/2026"
+  "previsao": ""
 }
